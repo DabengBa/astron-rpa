@@ -1,0 +1,5 @@
+id,issue_title,task_content,acceptance_criteria,project_progress,file_path
+T101,实现依赖解析多来源合并,实现依赖解析输入来源合并（静态import扫描+组件映射表+组件元数据+手工补丁extraPackages/extraFiles），输出可用于打包的最终依赖清单,对基准流程生成的依赖清单完整可用；允许通过补丁机制补齐动态依赖并可复现,未开始,docs/specs/251230-standalone-script-export/prd.md
+T102,实现依赖解析报告可审计,实现“依赖解析报告”产出（记录每个依赖来源、版本、是否被过滤及原因），并写入构建日志或作为产物附件,报告可定位任一依赖的来源；出现缺依赖时能通过报告追溯原因,未开始,docs/specs/251230-standalone-script-export/prd.md
+T103,实现过滤与blockedImports生成,实现excludedComponents过滤与blockedImports生成规则（默认阻断opencv/selenium及相关模块），并在运行时命中时给出可读错误,尝试导入被阻断模块时：提示包含模块名/原因/建议；退出码非0；日志包含命中项与traceback,未开始,docs/specs/251230-standalone-script-export/prd.md
+T104,集成UV用于导出阶段离线化,在导出阶段使用UV解析并下载依赖（生成可复现的requirements/lock与wheel集合），运行阶段不调用uv/pip且不联网,断网运行产物仍可执行；抓包/日志确认运行阶段无依赖下载行为,未开始,docs/specs/251230-standalone-script-export/prd.md

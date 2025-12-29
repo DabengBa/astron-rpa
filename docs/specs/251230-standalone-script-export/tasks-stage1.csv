@@ -1,0 +1,5 @@
+id,issue_title,task_content,acceptance_criteria,project_progress,file_path
+T001,明确接口与目录契约,在工程内定义依赖分析器/打包器/启动器的接口与最小实现骨架，并明确“形态A自包含目录”的产物目录契约（runtime/packages/scripts/resources/manifest.json）,能够生成空流程产物目录且包含manifest.json；启动器可读取manifest并在缺失/损坏时友好失败（非0退出码）,已完成,engine/standalone/contracts.py
+T002,落地manifest.json规范,基于PRD的6.5.3实现manifest.json(v1)结构定义（字段列表、必填校验、版本号schemaVersion），并在导出时生成该文件,导出产物包含manifest.json且字段python/entrypoint/paths/astronverse/pythonPackages不为空；启动器启动时强校验manifest可解析,已完成,engine/standalone/manifest.py
+T003,准备基准示例流程与冒烟用例,准备至少一个不依赖vision/browser的基准示例流程（覆盖system/excel等基础能力）及冒烟测试说明，用于后续阶段持续回归,基准流程可在开发机运行通过；冒烟步骤文档化并可重复执行,已完成,docs/specs/251230-standalone-script-export/smoke.md
+T004,定义日志与退出码最小约定,定义启动器最小日志输出与退出码约定（成功/manifest错误/blockedImports/脚本异常等），并写入PRD或补充说明,至少覆盖4类退出码且在PRD中可查；错误提示包含“原因+日志路径”,已完成,docs/specs/251230-standalone-script-export/prd.md

@@ -1,0 +1,6 @@
+id,issue_title,task_content,acceptance_criteria,project_progress,file_path
+T301,构建集成测试矩阵与错误注入,补齐集成测试矩阵（Win10/Win11、非管理员、离线、缺包/阻断/脚本异常注入），并形成可重复执行的测试清单,测试清单可复用；覆盖标准2/3/4/5/11；关键失败场景有明确期望输出,未开始,docs/specs/251230-standalone-script-export/prd.md
+T302,统一日志路径与退出码实现,按PRD要求统一默认日志落盘路径与退出码，并确保提示模板一致（含日志路径）,任一失败场景都能在UI/终端看到原因与日志路径；日志含完整traceback,未开始,docs/specs/251230-standalone-script-export/prd.md
+T303,形态B单文件原型：缓存与并发锁,实现形态B单文件启动器原型：内嵌/携带资源，首次解压到缓存目录并加锁，后续缓存命中热启动；支持手动清理缓存,首次运行可执行通过；同buildId并发启动不破坏缓存；缓存命中启动耗时满足标准6热启动目标,未开始,docs/specs/251230-standalone-script-export/prd.md
+T304,形态B升级与缓存失效策略,实现buildId变更导致的新版本缓存目录创建与旧版本保留/回收策略（按最近N个/大小阈值），并写入manifest与文档,升级后不复用旧缓存；回收策略可配置且可验证；不误删正在使用的缓存,未开始,docs/specs/251230-standalone-script-export/prd.md
+T305,压缩与杀软兼容评估,将UPX等压缩作为可选构建参数，评估常见杀软/企业环境兼容风险并给出默认策略,默认构建不启用UPX；可选开关可用且有风险说明文档,未开始,docs/specs/251230-standalone-script-export/prd.md

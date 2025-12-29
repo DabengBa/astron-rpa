@@ -1,0 +1,6 @@
+id,issue_title,task_content,acceptance_criteria,project_progress,file_path
+T201,实现形态A目录打包器,实现“形态A自包含目录”打包器：生成export目录并放入runtime/packages/scripts/resources/manifest.json，支持拷贝到任意路径运行,产物目录结构符合PRD 6.5.1；在开发机可直接运行入口脚本,未开始,docs/specs/251230-standalone-script-export/prd.md
+T202,实现启动器就地运行与环境隔离,启动器支持以产物根目录为BASE_DIR就地运行；正确设置PYTHONHOME/._pth并屏蔽外部PYTHONPATH/site-packages污染,目标机未安装Python也可运行；环境变量污染（如设置PYTHONPATH）不影响运行结果,未开始,docs/specs/251230-standalone-script-export/prd.md
+T203,原生依赖收集与自检,实现.dll/.pyd等原生依赖的收集与随包分发，并把清单写入manifest.nativeArtifacts；提供最小自检（启动前校验关键文件存在）,基准流程运行不缺dll/pyd；缺失关键文件时能提前报错并指向修复建议,未开始,docs/specs/251230-standalone-script-export/prd.md
+T204,集成到现有导出流程,把“导出独立脚本（形态A）”选项接入现有代码生成/导出流程（UI或CLI），并默认走形态A MVP 闭环,用户在界面/命令选择后可得到可运行export目录；manifest与日志输出符合规范,未开始,docs/specs/251230-standalone-script-export/prd.md
+T205,性能与体积基线回归,建立形态A的冷启动耗时与产物体积的基线测试方式，并确保达到PRD标准6/7的目标线,冷启动耗时与体积被记录且可重复；默认产物不包含opencv/selenium等阻断依赖,未开始,docs/specs/251230-standalone-script-export/prd.md
