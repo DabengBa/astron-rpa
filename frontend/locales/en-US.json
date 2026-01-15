@@ -1,4 +1,4 @@
-{
+﻿{
   "360": "360 Browser",
   "360Description": "Install the 360 browser extension to ensure the normal operation of browser automation components.",
   "360x": "360X Browser",
@@ -179,9 +179,9 @@
   "conditionSetting": "Condition setting",
   "conditionValue": "Condition Value",
   "configFile": "Configuration file",
-  "configFileError": "Only supports offline activation by uploading a .license file",
-  "configFileInfo": "Please upload the .license file for offline activation",
-  "configFileTip": "Support uploading .license file for offline activation",
+  "configFileError": "(Removed) Offline activation",
+  "configFileInfo": "(Removed) Offline activation",
+  "configFileTip": "(Removed) Offline activation",
   "configParameters": "Configuration parameters",
   "configParams": "Configuration Parameters",
   "configureTitle": "Please configure the title",
@@ -662,7 +662,7 @@
   "notQuoted": "Not quoted",
   "notSupportDesktopModifi": "Not support desktop elements modification.",
   "notification": "Notification",
-  "offlineLogin": "Offline authorized login",
+  "offlineLogin": "(Removed) Offline authorized login",
   "onlyPosition": "Match Only Position",
   "openFolder": "Open folder",
   "openPlatform": "Open platform",
@@ -1022,3 +1022,4 @@
   "yes": "Yes",
   "yesterday": "Yesterday"
 }
+

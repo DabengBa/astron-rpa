@@ -1,4 +1,4 @@
-{
+﻿{
   "app": "星辰RPA",
   "login": "登录",
   "signUp": "注册账号",
@@ -90,7 +90,7 @@
   "passwordNotEmpty": "密码不能为空！",
   "mobilePhoneNotEmpty": "手机号不能为空！",
   "verificationCodeNotEmpty": "验证码不能为空！",
-  "offlineLogin": "离线授权登录",
+  "offlineLogin": "（已移除）离线授权登录",
   "openPlatform": "开放平台",
   "verificationCodeSended": "验证码已发送！",
   "getVerificationCode": "获取验证码",
@@ -101,9 +101,9 @@
   "deviceNumberTip": "机器设备号即为设备的MAC地址",
   "deviceNumberCopy": "设备号支持复制",
   "configFile": "配置文件",
-  "configFileTip": "支持上传.license文件离线激活",
-  "configFileInfo": "请上传.license文件离线激活",
-  "configFileError": "仅支持上传.license文件离线激活",
+  "configFileTip": "（已移除）离线激活",
+  "configFileInfo": "（已移除）离线激活",
+  "configFileError": "（已移除）离线激活",
   "fileVerificationFailed": "文件校验失败，请重新上传",
   "fileVerificationSuccess": "文件校验成功",
   "fileParsingFailed": "解析失败，请确定文件内容是否正确！",
@@ -1042,3 +1042,4 @@
     "smartComponent": "智能组件"
   }
 }
+

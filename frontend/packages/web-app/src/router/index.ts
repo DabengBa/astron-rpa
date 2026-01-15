@@ -1,4 +1,4 @@
-import type { RouteLocationAsRelativeGeneric, RouteRecordRaw } from 'vue-router'
+﻿import type { RouteLocationAsRelativeGeneric, RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import {
@@ -280,7 +280,7 @@ router.beforeEach(async (to, from, next) => {
     if (first)
       return next(first)
 
-    window.location.href = '/boot.html?code=403' // 无权限访问，跳转到登录页
+    window.location.href = '/index.html' // 无权限访问：离线模式不跳登录
     return
   }
   next()
@@ -300,3 +300,4 @@ window.addEventListener('load', () => {
 })
 
 export default router
+

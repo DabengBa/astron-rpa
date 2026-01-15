@@ -1,4 +1,4 @@
-import { message } from 'ant-design-vue'
+﻿import { message } from 'ant-design-vue'
 
 import { isBase64Image } from '@/utils/common'
 import { storage } from '@/utils/storage'
@@ -36,10 +36,9 @@ export function getImageURL(str: string): string {
  */
 export function unauthorize(response) {
   if (response.config.toast === false) {
-    message.error(response.data.message || response.data.msg || '登录失效，请重新登录')
+    message.error(response.data.message || response.data.msg || '离线便携模式下无需登录')
   }
-  const code = response.data.code || response.data.ret
-  location.href = `/boot.html?code=${code}`
+  location.href = `/index.html`
 }
 
 let isUnauthorized = null
@@ -47,16 +46,10 @@ export function unauthorizeModal(code?: string | number) {
   if (isUnauthorized)
     return
 
-  let message = '登录失效，请重新登录'
-  if (code === '900001') {
-    message = '账号已在其他地方登录，请重新登录'
-  }
-  else if (code === '900005') {
-    message = '空间已到期，请重新登录'
-  }
+  const message = '离线便携模式下无需登录'
 
   isUnauthorized = GlobalModal.error({
-    title: '登录失效',
+    title: '离线模式提示',
     content: message,
     keyboard: false,
     maskClosable: false,
