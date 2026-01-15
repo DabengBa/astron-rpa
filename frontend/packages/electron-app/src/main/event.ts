@@ -1,11 +1,11 @@
-import { Buffer } from 'node:buffer'
+﻿import { Buffer } from 'node:buffer'
 import fsPromises from 'node:fs/promises'
 import fs from 'node:fs'
 import { join } from 'node:path'
 
 import type { BrowserWindow } from 'electron'
 import { clipboard, dialog, globalShortcut, ipcMain, screen, shell } from 'electron'
-import throttle from 'lodash/throttle'
+import throttle from 'lodash-es/throttle'
 
 import logger from './log'
 import { openPath } from './path'
@@ -339,3 +339,4 @@ export function listenRender() {
     quitAndInstallUpdates()
   })
 }
+

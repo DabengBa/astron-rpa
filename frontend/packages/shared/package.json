@@ -42,9 +42,11 @@
   },
   "devDependencies": {
     "style-dictionary": "^4.4.0",
-    "tsdown": "^0.19.0-beta.2"
+    "tsdown": "^0.19.0-beta.2",
+    "ant-design-vue": "^4.2.6"
   },
   "dependencies": {
-    "@ctrl/tinycolor": "^4.1.0"
+    "@ctrl/tinycolor": "^4.1.0",
+    "lodash-es": "^4.17.21"
   }
 }

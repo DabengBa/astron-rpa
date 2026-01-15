@@ -1,8 +1,8 @@
-import path from 'node:path'
+﻿import path from 'node:path'
 
 import { app, BrowserWindow, screen } from 'electron'
 import type { CreateWindowOptions } from '@rpa/shared/platform'
-import { isUndefined } from 'lodash'
+import { isUndefined } from 'lodash-es'
 
 import { APP_ICON_PATH, MAIN_WINDOW_LABEL } from './config'
 import { resourcePath } from './path'
@@ -142,3 +142,4 @@ export function createSubWindow(options: CreateWindowOptions) {
 
   return window
 }
+

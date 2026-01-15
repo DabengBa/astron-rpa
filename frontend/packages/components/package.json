@@ -60,7 +60,8 @@
     "react-dom": "18.3.1",
     "tailwind-merge": "^3.4.0",
     "vscode-languageserver-types": "^3.17.5",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "crypto-js": "^4.2.0"
   },
   "devDependencies": {
     "@ant-design/icons-vue": "^7.0.1",
