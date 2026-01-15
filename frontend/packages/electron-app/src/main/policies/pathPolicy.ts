@@ -12,10 +12,11 @@ export type WorkDirs = {
 }
 
 export function getPortableRootDir(): string {
+  // Packaged: app.getAppPath() points to .../resources/app.asar.
+  // Portable root should be the folder containing resources/.
   const appPath = app.getAppPath()
-  return app.isPackaged ? path.resolve(appPath, '..') : appPath
+  return app.isPackaged ? path.resolve(appPath, '../..') : appPath
 }
-
 export function resolveWorkDirs(): WorkDirs {
   const rootDir = getPortableRootDir()
 
@@ -35,4 +36,9 @@ export function resolveWorkDirs(): WorkDirs {
     logsDir,
   }
 }
+
+
+
+
+
 

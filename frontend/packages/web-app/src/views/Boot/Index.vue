@@ -13,6 +13,30 @@ import { utilsManager } from '@/platform'
 const { token } = theme.useToken()
 const progress = ref(0)
 
+async function waitForSchedulerReady() {
+  const start = Date.now()
+  const timeoutMs = 60_000
+  const intervalMs = 500
+
+  while (Date.now() - start < timeoutMs) {
+    try {
+      const resp = await fetch('http://127.0.0.1:13159/health', { cache: 'no-store' })
+      if (resp.ok) {
+        const data = await resp.json()
+        if (data?.route_port) {
+          storage.set('route_port', data.route_port)
+          sessionStorage.setItem('launch', '1')
+          location.replace(`/index.html`)
+          return
+        }
+      }
+    } catch {
+      // ignore until timeout
+    }
+    await new Promise(resolve => setTimeout(resolve, intervalMs))
+  }
+}
+
 utilsManager.listenEvent('scheduler-event', (eventMsg) => {
   const msgString = base64ToString(eventMsg)
   const msgObject = JSON.parse(msgString)
@@ -24,9 +48,8 @@ utilsManager.listenEvent('scheduler-event', (eventMsg) => {
       break
     }
     case 'sync_cancel': {
-      storage.set('route_port', msg?.route_port)
-      sessionStorage.setItem('launch', '1')
-      location.replace(`/index.html`)
+      // 兼容旧链路：仍接收事件，但由 /health 探活确认 ready
+      waitForSchedulerReady()
       break
     }
     default:
@@ -36,6 +59,7 @@ utilsManager.listenEvent('scheduler-event', (eventMsg) => {
 
 window.onload = () => {
   utilsManager.invoke('main_window_onload').catch(() => {})
+  waitForSchedulerReady()
 }
 </script>
 

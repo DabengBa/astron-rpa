@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process'
+﻿import { exec } from 'node:child_process'
 import fs from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -8,6 +8,7 @@ import { mainToRender } from './event'
 import { extract7z } from './file'
 import logger from './log'
 import { appWorkPath, confPath, pythonExe, resourcePath } from './path'
+import { resolveWorkDirs } from './policies/pathPolicy'
 import { getMainWindow } from './window'
 import { envJson } from './env'
 
@@ -135,11 +136,13 @@ async function readHashFile(hashFilePath: string): Promise<string> {
  * @returns 是否需要重新解压
  * */
 async function checkSingleFile(packageFile: string): Promise<boolean> {
+  const workDirs = resolveWorkDirs()
+  const runtimeDir = workDirs.runtimeDir
   const archiveName = packageFile.replace('.7z', '')
-  const archivePath = join(appWorkPath, archiveName)
+  const archivePath = join(runtimeDir, archiveName)
   const hashFileName = `${packageFile}.sha256.txt`
   const resourceHashPath = join(resourcePath, hashFileName)
-  const appWorkHashPath = join(appWorkPath, hashFileName)
+  const appWorkHashPath = join(runtimeDir, hashFileName)
 
   logger.info(`检查文件: ${packageFile}`)
 
@@ -218,7 +221,8 @@ async function checkAndCleanExtractedFiles(packageFiles: string[]): Promise<stri
  */
 async function copySingleFile(fileName: string): Promise<{ fileName: string, success: boolean, error?: string }> {
   const sourcePath = join(resourcePath, fileName)
-  const targetPath = join(appWorkPath, fileName)
+  const { runtimeDir } = resolveWorkDirs()
+  const targetPath = join(runtimeDir, fileName)
 
   try {
     // 检查源文件是否存在
@@ -242,6 +246,16 @@ async function ensureAppWorkPathExists(): Promise<void> {
   } catch {
     logger.info(`创建用户数据目录: ${appWorkPath}`)
     await fs.mkdir(appWorkPath, { recursive: true })
+  }
+}
+
+async function ensureRuntimeDirExists(): Promise<void> {
+  const { runtimeDir } = resolveWorkDirs()
+  try {
+    await fs.access(runtimeDir)
+  } catch {
+    logger.info(`创建运行时目录: ${runtimeDir}`)
+    await fs.mkdir(runtimeDir, { recursive: true })
   }
 }
 
@@ -327,6 +341,7 @@ export async function startBackend() {
   }
 
   await ensureAppWorkPathExists()
+  await ensureRuntimeDirExists()
 
   logger.info(`需要解压的文件: ${needExtractFiles.join(', ')}`)
 
@@ -347,7 +362,8 @@ export async function startBackend() {
  */
 async function extractAndCleanFile(file: string): Promise<void> {
   const archivePath = join(resourcePath, file)
-  const outputDir = join(appWorkPath, file.replace('.7z', ''))
+  const { runtimeDir } = resolveWorkDirs()
+  const outputDir = join(runtimeDir, file.replace('.7z', ''))
   const tempOutputDir = `${outputDir}.temp`
 
   const clearAll = () => Promise.all([
@@ -374,3 +390,10 @@ async function extractAndCleanFile(file: string): Promise<void> {
     clearAll()
   }
 }
+
+
+
+
+
+
+

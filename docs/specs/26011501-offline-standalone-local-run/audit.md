@@ -138,9 +138,33 @@ Spec: `docs/specs/26011501-offline-standalone-local-run`
 
 ## 结论与下一步
 
-建议在合并/发布离线便携包之前，先完成两个阻塞项：
+基于本次复核（对照当前仓库实现与脚本），文中高价值建议多数成立，且其中 **P0 两项应当作为发布门槛**。同时也有少量表述需要校准：例如“Updater OFFLINE 下不调用”虽然逻辑成立（`featureGate.canCheckUpdate=false`），但主进程当前仍会在启动时执行 `sessionHanlder()` 并注册 `webRequest` 钩子，这意味着“离线态仍存在外域请求通道与凭证注入能力”，属于更高确定性的风险点。
 
-1) OFFLINE profile 的系统性“禁出网”收敛（配置源 + webRequest 硬拦截 + 清理外域白名单 + 移除 jwt 注入链路）
+建议在合并/发布离线便携包之前，优先完成以下高价值事项（按优先级）：
 
-2) 统一构建工具链（bun vs pnpm），确保 `build.bat` 可在干净环境一键成功
+1) [P0/发布门槛] OFFLINE profile 的系统性“禁出网”收敛（从“UI 置灰/逻辑不触发”升级为“主进程硬约束”）
+   - 复核结论：实习生指出的风险 **正确且值得采纳**。
+   - 依据：`frontend/packages/electron-app/src/main/env.ts` 的 `REQUEST_WHITE_URL` 明确包含外域；`frontend/packages/electron-app/src/main/index.ts` 的 `sessionHanlder()` 会对这些 URL 注入 `Cookie: jwt=...`。
+   - 落地建议（可上线实现，推荐拆成两层）：
+     - **默认阻断层（强制）**：在 Electron 主进程 `webRequest.onBeforeRequest` 里，OFFLINE 时仅允许 `localhost/127.0.0.1`（必要时补充 `rpa://` 与文件协议），其余一律 `cancel` 并记录到本地日志（便于排障和审计）。
+     - **白名单层（可选）**：仅在 ONLINE profile 才启用 `REQUEST_WHITE_URL` 的外域项；并将 `sessionHanlder()` 的“Set-Cookie -> jwt 注入”能力限定在 ONLINE 且确有业务必要的目标域名。
+   - 配置源建议：将 RunProfile/NetworkPolicy 的读取真正落到“便携根目录配置（如 `./conf.yaml`）”，并把默认包内 `resources/conf.yaml` 改为离线安全默认值（至少不包含外域 remote_addr，或置空并确保逻辑容错）。
 
+2) [P0/发布门槛] 构建脚本与包管理器约束冲突（bun vs pnpm）
+   - 复核结论：实习生指出的阻塞 **正确且必须修复**。
+   - 依据：`frontend/package.json` 的 `preinstall` 强制 `pnpm`（`npx only-allow pnpm`），而 `build.bat` 前端链路执行 `bun install`，在干净环境中会直接失败。
+   - 采纳建议：结合项目规范“Node.js 一律用 bun”，建议以 bun 为主修复冲突：
+     - 移除或改写 `preinstall`，允许 bun；并补充一段更明确的错误提示（仅当用户用 npm/yarn 时阻断）。
+     - 同步检查 lockfile 策略：若继续使用 pnpm-lock 作为单一锁文件，则需要明确 bun 的安装行为与可复现性边界；否则应切换为 bun.lock 并调整 CI/文档。
+
+3) [P1] 启动就绪判定应以 `/health` 作为唯一数据源（替代 `sync_cancel` 事件驱动）
+   - 复核结论：方向 **正确且值得采纳**，但建议作为 P1（不一定阻塞发布，取决于当前启动稳定性指标）。
+   - 依据：当前 Boot 页逻辑在 `frontend/packages/web-app/src/views/Boot/Index.vue` 依赖 `scheduler-event: sync_cancel` 来写入 `route_port` 并跳转；而引擎侧 `engine/servers/astronverse-scheduler/src/astronverse/scheduler/apis/route.py` 已提供 `GET /health` 返回 `status/route_port`。
+   - 采纳建议：在主进程实现对 `http://127.0.0.1:13159/health` 的轮询与超时错误提示，并将“ready/failed”作为 Boot 页唯一推进依据，减少事件耦合。
+
+4) [P2] 诊断包补齐最小可运维信息（端口/探活/耗时）
+   - 复核结论：建议 **正确且性价比高**，适合快速增强。
+   - 依据：当前 `frontend/packages/electron-app/src/main/diagnostics.ts` 的 `meta.json` 已含 `remoteAddr/workDirs` 等基础信息，但未包含对关键端口或 `/health` 的探测结果。
+   - 采纳建议：在 `meta.json` 追加 `schedulerHealthProbe` 字段（HTTP 状态码、耗时、body 摘要），并记录本机端口占用检测结果；进程存活检测可作为可选项。
+
+总体建议：P0 两项（禁出网硬约束 + 构建链路一致性）完成后，再评估是否将 `/health` ready 闭环提升为发布门槛；诊断包增强可并行投入。

@@ -9,7 +9,7 @@ from astronverse.scheduler.core.executor.executor import ExecutorManager
 from astronverse.scheduler.core.picker.picker import Picker
 from astronverse.scheduler.core.servers.normal_server import TriggerServer, VNCServer
 from astronverse.scheduler.logger import logger
-from astronverse.scheduler.utils.utils import check_port
+from astronverse.scheduler.utils.utils import check_port, is_port_available
 
 
 class Svc:
@@ -112,7 +112,7 @@ class Svc:
             return
 
         # 等待本地路由加载完成
-        while check_port(port=self.rpa_route_port):
+        while is_port_available(port=self.rpa_route_port):
             time.sleep(0.1)
         for k, v in self.port_dict.items():
             register_component(k, v)
@@ -126,4 +126,5 @@ def get_svc() -> Svc:
     获取全局svc
     """
     return _svc
+
 

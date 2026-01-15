@@ -1,4 +1,4 @@
-import base64
+﻿import base64
 import json
 import locale
 import os
@@ -65,19 +65,19 @@ def emit_to_front(emit_type: EmitType, msg=None):
 
 
 def check_port(port, host="127.0.0.1"):
-    """
-    检测端口是否可用
-    """
+    """Return True if the port is already in use (not available)."""
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            # 设置超时时间
             sock.settimeout(0.2)
             result = sock.connect_ex((host, port))
-            if result == 0:
-                return False
-    except Exception as e:
-        pass
-    return True
+            return result == 0
+    except Exception:
+        return False
+
+
+def is_port_available(port, host="127.0.0.1"):
+    """Return True if the port is available for binding."""
+    return not check_port(port=port, host=host)
 
 
 def kill_proc_tree(
@@ -155,3 +155,4 @@ def get_settings(file_path=".setting.json", times: int = 5):
         except Exception as e:
             time.sleep(0.1)
     return setting
+

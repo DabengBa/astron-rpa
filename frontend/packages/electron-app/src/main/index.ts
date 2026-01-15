@@ -11,6 +11,7 @@ import { checkPythonRpaProcess, startBackend } from './server'
 import { changeTray, createTray } from './tray'
 import { createSubWindow, createMainWindow as createWindow, electronInfo, getMainWindow, WindowStack } from './window'
 import { rendererPath, windowBaseUrl } from './path'
+import { config } from './config'
 
 const startTime = Date.now()
 globalThis.MainWindowLoaded = false
@@ -90,6 +91,26 @@ function sessionHanlder() {
   )
 }
 
+function enforceOfflineNetworkPolicy() {
+  if (config.run_profile !== 'OFFLINE')
+    return
+
+  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
+    try {
+      const u = new URL(details.url)
+      const host = u.hostname
+      const isLoopback = host === '127.0.0.1' || host === 'localhost'
+      const isDevLoopback = u.protocol === 'rpa:'
+      if (!isLoopback && !isDevLoopback)
+        return callback({ cancel: true })
+    } catch {
+      return callback({ cancel: true })
+    }
+
+    return callback({ cancel: false })
+  })
+}
+
 function registerRpaProtocol() {
   // 注册自定义协议 rpa://localhost/boot.html 映射到本地 rendererPath/boot.html
   protocol.registerFileProtocol('rpa', (request, callback) => {
@@ -107,7 +128,9 @@ function registerRpaProtocol() {
 async function ready() {
   logger.info('app ready')
   await checkProcess()
-  sessionHanlder()
+  enforceOfflineNetworkPolicy()
+  if (config.run_profile !== 'OFFLINE')
+    sessionHanlder()
   registerRpaProtocol()
   listenRender()
   registerDiagnosticsIpc()

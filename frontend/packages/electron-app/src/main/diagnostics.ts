@@ -2,6 +2,8 @@
 import os from 'node:os'
 import path from 'node:path'
 
+import { net } from 'electron'
+
 import { app, ipcMain } from 'electron'
 
 import logger from './log'
@@ -32,6 +34,37 @@ async function collectLogFiles(logDir: string): Promise<string[]> {
   }
 }
 
+async function probeSchedulerHealth(url: string): Promise<{ url: string, ok: boolean, status?: number, ms?: number, bodySnippet?: string, error?: string }> {
+  const start = Date.now()
+  try {
+    const resp = await new Promise<{ statusCode?: number, body?: string }>((resolve, reject) => {
+      const req = net.request(url)
+      let body = ''
+      req.on('response', (res) => {
+        res.on('data', (chunk) => {
+          body += chunk.toString()
+        })
+        res.on('end', () => {
+          resolve({ statusCode: res.statusCode, body })
+        })
+      })
+      req.on('error', reject)
+      req.end()
+    })
+
+    const ms = Date.now() - start
+    const status = resp.statusCode ?? 0
+    const ok = status >= 200 && status < 300
+    const text = resp.body ?? ''
+    const bodySnippet = text.length > 512 ? text.slice(0, 512) : text
+    return { url, ok, status, ms, bodySnippet }
+  } catch (e) {
+    const ms = Date.now() - start
+    const msg = e instanceof Error ? e.message : String(e)
+    return { url, ok: false, ms, error: msg }
+  }
+}
+
 async function writeDiagnosticsBundle(): Promise<{ ok: boolean, outputPath?: string, error?: string }> {
   try {
     const rootDir = getPortableRootDir()
@@ -55,6 +88,7 @@ async function writeDiagnosticsBundle(): Promise<{ ok: boolean, outputPath?: str
       portableRootDir: rootDir,
       workDirs,
       remoteAddr: config.remote_addr,
+      schedulerHealthProbe: await probeSchedulerHealth('http://127.0.0.1:13159/health'),
     }
 
     await fs.writeFile(path.join(bundleDir, 'meta.json'), JSON.stringify(meta, null, 2), 'utf-8')

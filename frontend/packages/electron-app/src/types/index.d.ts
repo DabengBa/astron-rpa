@@ -3,6 +3,7 @@
 export interface IConfig {
   remote_addr: string
   skip_engine_start: boolean
+  run_profile?: 'OFFLINE' | 'ONLINE'
 }
 
 export interface W2WType {

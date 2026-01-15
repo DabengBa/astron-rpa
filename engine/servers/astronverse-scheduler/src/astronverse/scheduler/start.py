@@ -22,7 +22,7 @@ from astronverse.scheduler.core.servers.core_server import (
 from astronverse.scheduler.core.setup.setup import Process
 from astronverse.scheduler.core.svc import get_svc
 from astronverse.scheduler.logger import logger
-from astronverse.scheduler.utils.utils import check_port
+from astronverse.scheduler.utils.utils import check_port, emit_to_front, EmitType, is_port_available
 from fastapi import FastAPI
 
 # 0. app实例化，并做初始化
@@ -55,6 +55,13 @@ def start():
         linux_env_check()
 
         # 4. 服务注册与启动
+
+        # Preflight: abort early if the fixed route port is already occupied.
+        if not is_port_available(port=svc.rpa_route_port):
+            msg = f"route_port {svc.rpa_route_port} is already in use. Please close the conflicting process and retry."
+            logger.error(msg)
+            emit_to_front(EmitType.ALERT, msg={"msg": msg, "step": 0})
+            return
         server_mg = ServerManager(svc)
         server_mg.register(RpaRouteServer(svc))
         server_mg.register(RpaBrowserConnectorServer(svc))
@@ -68,7 +75,7 @@ def start():
         server_mg.run()
 
         # 5. 等待本地网关加载完成，并注册服务
-        while check_port(port=svc.rpa_route_port):  # 等待本地路由加载完成
+        while is_port_available(port=svc.rpa_route_port):  # 等待本地路由加载完成
             time.sleep(0.1)
         svc.route_server_is_start = True
         svc.register_server()
@@ -84,4 +91,6 @@ def start():
         )
     except Exception as e:
         logger.error("astronverse.scheduler error: {} traceback: {}".format(e, traceback.format_exc()))
+
+
 
