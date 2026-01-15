@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 
 REM Save script directory path IMMEDIATELY
@@ -332,14 +332,14 @@ echo ============================================
 echo Starting Frontend Build
 echo ============================================
 
-echo Checking pnpm installation...
-call pnpm --version >nul 2>&1
+echo Checking bun installation...
+call bun --version >nul 2>&1
 if !errorlevel! neq 0 (
     echo.
-    echo ERROR: pnpm not found, please install pnpm first: npm install -g pnpm
+    echo ERROR: bun not found, please install bun first: https://bun.sh
     exit /b 1
 )
-echo pnpm check passed
+echo bun check passed
 
 echo Navigating to frontend directory: %SCRIPT_DIR%\frontend
 cd /d "%SCRIPT_DIR%\frontend"
@@ -358,7 +358,7 @@ if not exist "package.json" (
 )
 
 echo Installing dependencies...
-call pnpm install
+call bun install
 if !errorlevel! neq 0 (
     echo pnpm install failed
     cd /d "%SCRIPT_DIR%"
@@ -366,7 +366,7 @@ if !errorlevel! neq 0 (
 )
 
 echo Building desktop application...
-call pnpm build:desktop
+call bun run build:desktop
 if !errorlevel! neq 0 (
     echo Desktop application build failed
     cd /d "%SCRIPT_DIR%"
@@ -387,3 +387,4 @@ echo ============================================
 echo.
 echo Installation package location:
 echo   Frontend installer: frontend\packages\electron-app\dist\
+
