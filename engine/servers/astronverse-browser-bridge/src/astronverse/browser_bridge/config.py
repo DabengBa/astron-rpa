@@ -1,4 +1,4 @@
-from no_config import Config
+﻿from no_config import Config
 
 
 class AppSettings:
@@ -14,7 +14,7 @@ class HttpSettings:
     http配置
     """
 
-    app_host: str = "0.0.0.0"
+    app_host: str = "127.0.0.1"
     app_port: int = 9082
     gateway_port: int = 13159
 
@@ -27,3 +27,4 @@ class Config:
 
     app_settings: AppSettings = AppSettings()
     http_settings: HttpSettings = HttpSettings()
+
