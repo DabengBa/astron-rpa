@@ -1,9 +1,11 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Button, TypographyParagraph } from 'ant-design-vue'
+import { Capability, DEFAULT_OFFLINE_CAPABILITY_MATRIX } from '@rpa/shared/platform'
 import { useTranslation } from 'i18next-vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
+import OfflineGate from '@/components/OfflineGate/index.vue'
 import { useAppConfigStore } from '@/stores/useAppConfig'
 
 import Card from '../components/card.vue'
@@ -11,6 +13,8 @@ import Card from '../components/card.vue'
 const { t } = useTranslation()
 const appStore = useAppConfigStore()
 const { appInfo, updaterState } = storeToRefs(appStore)
+
+const updateCap = DEFAULT_OFFLINE_CAPABILITY_MATRIX[Capability.UPDATE]
 
 const textItems = computed(() => ([
   {
@@ -36,6 +40,8 @@ const textItems = computed(() => ([
 ]))
 
 async function checkUpdate() {
+  if (!updateCap.enabled)
+    return
   await appStore.checkUpdate(true)
 }
 </script>
@@ -47,9 +53,11 @@ async function checkUpdate() {
         <img src="/icons/icon.png" width="40" height="40">
       </template>
       <template #suffix>
-        <Button :loading="updaterState.checkLoading" @click="checkUpdate">
-          {{ t('settingCenter.about.checkUpdate') }}
-        </Button>
+        <OfflineGate :disabled="!updateCap.enabled" :reason="updateCap.reason">
+          <Button :loading="updaterState.checkLoading" :disabled="!updateCap.enabled" @click="checkUpdate">
+            {{ t('settingCenter.about.checkUpdate') }}
+          </Button>
+        </OfflineGate>
       </template>
     </Card>
     <div class="w-full p-[24px]">

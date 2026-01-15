@@ -29,3 +29,18 @@ export function getDefaultFeatureGate(profile: RunProfile): FeatureGate {
     offlineReason: OFFLINE_REASON,
   }
 }
+
+export enum Capability {
+  UPDATE = 'UPDATE',
+  MARKET = 'MARKET',
+  CLOUD_AI = 'CLOUD_AI',
+}
+
+export type CapabilityMatrix = Record<Capability, { enabled: boolean, reason: string }>
+
+export const DEFAULT_OFFLINE_CAPABILITY_MATRIX: CapabilityMatrix = {
+  [Capability.UPDATE]: { enabled: false, reason: OFFLINE_REASON },
+  [Capability.MARKET]: { enabled: false, reason: OFFLINE_REASON },
+  [Capability.CLOUD_AI]: { enabled: false, reason: OFFLINE_REASON },
+}
+
