@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, protocol, session } from 'electron'
+﻿import { app, BrowserWindow, ipcMain, protocol, session } from 'electron'
 import path from 'node:path'
 
 import type { W2WType } from '../types'
@@ -6,6 +6,7 @@ import type { W2WType } from '../types'
 import logger from './log'
 import { envJson } from './env'
 import { listenRender } from './event'
+import { registerDiagnosticsIpc } from './diagnostics'
 import { checkPythonRpaProcess, startBackend } from './server'
 import { changeTray, createTray } from './tray'
 import { createSubWindow, createMainWindow as createWindow, electronInfo, getMainWindow, WindowStack } from './window'
@@ -109,6 +110,7 @@ async function ready() {
   sessionHanlder()
   registerRpaProtocol()
   listenRender()
+  registerDiagnosticsIpc()
   createMainWindow()
 }
 
@@ -178,3 +180,4 @@ ipcMain.handle('tray_change', (_event, { mode, status }) => {
   const mainWindow = getMainWindow()
   mainWindow && changeTray(mainWindow, mode, status)
 })
+

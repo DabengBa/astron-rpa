@@ -11,7 +11,7 @@ export type WorkDirs = {
   logsDir: string
 }
 
-function getPortableRootDir(): string {
+export function getPortableRootDir(): string {
   const appPath = app.getAppPath()
   return app.isPackaged ? path.resolve(appPath, '..') : appPath
 }
@@ -35,3 +35,4 @@ export function resolveWorkDirs(): WorkDirs {
     logsDir,
   }
 }
+

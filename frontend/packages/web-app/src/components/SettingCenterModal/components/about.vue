@@ -1,11 +1,12 @@
 ﻿<script setup lang="ts">
-import { Button, TypographyParagraph } from 'ant-design-vue'
+import { Button, TypographyParagraph, message } from 'ant-design-vue'
 import { Capability, DEFAULT_OFFLINE_CAPABILITY_MATRIX } from '@rpa/shared/platform'
 import { useTranslation } from 'i18next-vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
 import OfflineGate from '@/components/OfflineGate/index.vue'
+import { exportDiagnostics } from '@/api/diagnostics'
 import { useAppConfigStore } from '@/stores/useAppConfig'
 
 import Card from '../components/card.vue'
@@ -44,6 +45,16 @@ async function checkUpdate() {
     return
   await appStore.checkUpdate(true)
 }
+
+async function exportDiag() {
+  const res = await exportDiagnostics()
+  if (res.ok) {
+    message.success(res.outputPath ? `已导出诊断包：${res.outputPath}` : '诊断包导出成功')
+  }
+  else {
+    message.error(res.error ? `诊断包导出失败：${res.error}` : '诊断包导出失败')
+  }
+}
 </script>
 
 <template>
@@ -53,11 +64,16 @@ async function checkUpdate() {
         <img src="/icons/icon.png" width="40" height="40">
       </template>
       <template #suffix>
-        <OfflineGate :disabled="!updateCap.enabled" :reason="updateCap.reason">
-          <Button :loading="updaterState.checkLoading" :disabled="!updateCap.enabled" @click="checkUpdate">
-            {{ t('settingCenter.about.checkUpdate') }}
+        <div class="flex gap-2">
+          <Button @click="exportDiag">
+            导出诊断包
           </Button>
-        </OfflineGate>
+          <OfflineGate :disabled="!updateCap.enabled" :reason="updateCap.reason">
+            <Button :loading="updaterState.checkLoading" :disabled="!updateCap.enabled" @click="checkUpdate">
+              {{ t('settingCenter.about.checkUpdate') }}
+            </Button>
+          </OfflineGate>
+        </div>
       </template>
     </Card>
     <div class="w-full p-[24px]">
