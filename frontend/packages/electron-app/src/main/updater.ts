@@ -1,7 +1,8 @@
-import { autoUpdater, type UpdateInfo as ElectronUpdateInfo } from "electron-updater"
+﻿import { autoUpdater, type UpdateInfo as ElectronUpdateInfo } from "electron-updater"
 import { to } from 'await-to-js'
 import { app } from 'electron'
 import type { UpdateInfo, UpdateManifest } from '@rpa/shared/platform'
+import { getDefaultFeatureGate, RunProfile } from '@rpa/shared/platform'
 import { withTimeout } from '@rpa/shared'
 
 import logger from "./log"
@@ -15,12 +16,16 @@ autoUpdater.forceDevUpdateConfig = false
 // 退出后不自动安装
 autoUpdater.autoInstallOnAppQuit = false
 
+const featureGate = getDefaultFeatureGate(RunProfile.OFFLINE)
+
 const url = urlJoin(
   config.remote_addr,
   '/api/robot/client-version-update/update-check',
   `${process.platform}/${process.arch}/${app.getVersion()}`
 )
-autoUpdater.setFeedURL(url)
+if (featureGate.canCheckUpdate) {
+  autoUpdater.setFeedURL(url)
+}
 
 //监听'error'事件
 // autoUpdater.on("error", (err) => {
@@ -54,6 +59,10 @@ autoUpdater.on("update-downloaded", (event) => {
 
 //检测更新
 export const checkForUpdates = async (): Promise<UpdateInfo> => {
+  if (!featureGate.canCheckUpdate) {
+    return { couldUpdate: false }
+  }
+
   const [error, result] = await to(autoUpdater.checkForUpdates());
   if (error) {
     return { couldUpdate: false }
@@ -82,3 +91,4 @@ export const checkForUpdates = async (): Promise<UpdateInfo> => {
 export const quitAndInstallUpdates = () => {
   autoUpdater.quitAndInstall()
 }
+

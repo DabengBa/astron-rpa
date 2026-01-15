@@ -1,5 +1,4 @@
-<script setup lang="ts">
-import { onMounted } from 'vue'
+﻿<script setup lang="ts">
 import { RouterView } from 'vue-router'
 
 import BackendReaction from '@/components/BackendReaction/Index.vue'
@@ -10,7 +9,6 @@ import { useAppConfigStore } from '@/stores/useAppConfig'
 
 const appStore = useAppConfigStore()
 
-onMounted(() => appStore.checkUpdate())
 </script>
 
 <template>
@@ -21,3 +19,5 @@ onMounted(() => appStore.checkUpdate())
     <GlobalRegister />
   </ConfigProvider>
 </template>
+
+
