@@ -1,16 +1,20 @@
-import path from 'node:path'
+﻿import path from 'node:path'
 
 import { app } from 'electron'
+
+import { resolveWorkDirs } from './policies/pathPolicy'
 
 export const appPath = app.getAppPath()
 export const userDataPath = app.getPath('userData')
 export const appDataPath = app.getPath('appData')
 
+const workDirs = resolveWorkDirs()
+
 // 打包后，资源文件存储在 appPath 下的 resources 目录，否则存储在根目录下的 resources 目录
 export const resourcePath = app.isPackaged ? path.join(appPath, '../') : path.join(appPath, '../../../resources')
-// 打包后，数据存储在 userDataPath ，否则存储在 appPath 下的 data 目录
-export const appWorkPath = app.isPackaged ? userDataPath : path.join(appPath, 'data')
-export const pythonCore = path.join(appWorkPath, 'python_core')
+// portable-first: packaged 场景也必须落在解压目录（而非 %APPDATA%）
+export const appWorkPath = workDirs.workDir
+export const pythonCore = path.join(workDirs.runtimeDir, 'python_core')
 export const pythonExe = path.join(pythonCore, 'python.exe')
 export const confPath = path.join(resourcePath, 'conf.yaml')
 export const d7zrPath = path.join(resourcePath, '7zr.exe')
@@ -34,3 +38,4 @@ export function openPath(targetPath: string): Promise<void> {
     })
   })
 }
+
