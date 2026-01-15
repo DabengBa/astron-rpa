@@ -49,3 +49,8 @@ Portable runtime data will be created on first start inside:
 
 - Default profile is OFFLINE: no auto-update check, no network egress.
 - All services should be loopback-only.
+
+## Windows UAC (no admin)
+
+- rontend/packages/electron-app/electron-builder.json sets win.requestedExecutionLevel=asInvoker and uses win.target=zip to ensure portable zip output without UAC.
+
