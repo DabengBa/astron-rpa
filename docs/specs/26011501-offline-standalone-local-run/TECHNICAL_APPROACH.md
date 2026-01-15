@@ -69,6 +69,34 @@
 
 这两个维度独立组合，避免与现有“调度模式/终端模式”概念冲突，也避免把网络与拓扑耦合在一个枚举里。
 
+#### 2.1.1 枚举定义与默认值
+
+- `RunProfile`
+  - `OFFLINE`（默认）
+  - `ONLINE`（预留扩展；本迭代不实现）
+
+- `TerminalMode`
+  - `NORMAL`（默认）
+  - `SCHEDULING`
+
+默认值：`RunProfile=OFFLINE` + `TerminalMode=NORMAL`。
+
+#### 2.1.2 配置读取优先级与落盘位置（Portable-first）
+
+> 目标：确保“解压即用”的可复制部署；所有可变配置必须在解压目录内可追溯、可备份。
+
+建议统一读取 `./config/runtime.json`（相对解压目录）作为“落盘后的最终有效配置”。
+
+- **落盘位置**：解压目录下 `./config/runtime.json`
+- **读取优先级（从高到低）**：
+  1. 命令行参数（例如 `--run_profile/--terminal_mode`）
+  2. 落盘配置 `./config/runtime.json`
+  3. 代码内默认值（`OFFLINE` + `NORMAL`）
+
+实现要求（约束）：
+- Electron 主进程在首次启动或缺省配置时，需要在解压目录内生成 `./config/runtime.json`（避免把默认值散落在多处）。
+- Web UI / 引擎 / 主进程必须从同一份“最终有效配置”读取（通过主进程下发或共享文件），避免出现 AppMode 冲突。
+
 ### 2.2 关键抽象
 
 - `PathPolicy`（路径策略）
