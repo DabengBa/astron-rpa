@@ -1,4 +1,4 @@
-import argparse
+﻿import argparse
 import time
 import traceback
 from pathlib import Path
@@ -78,9 +78,10 @@ def start():
         # 7. 启动服务
         uvicorn.run(
             app="astronverse.scheduler.start:app",
-            host="0.0.0.0",
+            host="127.0.0.1",
             port=svc.scheduler_port,
             workers=1,
         )
     except Exception as e:
         logger.error("astronverse.scheduler error: {} traceback: {}".format(e, traceback.format_exc()))
+

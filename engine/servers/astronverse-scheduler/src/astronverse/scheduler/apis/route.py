@@ -1,4 +1,4 @@
-from astronverse.scheduler.apis.connector import datatable, executor, picker, terminal, tools, ws
+﻿from astronverse.scheduler.apis.connector import datatable, executor, picker, terminal, tools, ws
 from astronverse.scheduler.core.lsp.routes import router as lsp_router
 from astronverse.scheduler.core.svc import get_svc
 from fastapi import Depends, FastAPI
@@ -6,6 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 def handler(app: FastAPI):
+    @app.get("/health")
+    def health():
+        svc = get_svc()
+        return {
+            "status": "ok" if svc.route_server_is_start else "starting",
+            "route_port": svc.rpa_route_port,
+        }
     # 添加全局中间件
     app.add_middleware(
         CORSMiddleware,
@@ -55,3 +62,4 @@ def handler(app: FastAPI):
         tags=["datatable"],
         dependencies=[Depends(get_svc)],
     )
+

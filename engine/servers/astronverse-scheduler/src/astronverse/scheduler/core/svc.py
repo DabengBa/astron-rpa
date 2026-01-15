@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 import threading
 import time
 
@@ -27,7 +27,7 @@ class Svc:
         # 端口号:
         self.__local_port__: int = 13158
         # 路由端口[随机分配]
-        self.rpa_route_port: int = self.get_validate_port(ComponentType.ROUTE)
+        self.rpa_route_port: int = 13159
         # 调度器端口[随机分配]
         self.scheduler_port: int = self.get_validate_port(ComponentType.SCHEDULER)
         # trigger端口[随机分配]
@@ -126,3 +126,4 @@ def get_svc() -> Svc:
     获取全局svc
     """
     return _svc
+
